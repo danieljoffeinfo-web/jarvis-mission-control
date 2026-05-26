@@ -1,0 +1,498 @@
+:root {
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --ink: #171717;
+  --muted: #5c5c5c;
+  --line: rgba(0, 0, 0, 0.08);
+  --line-strong: rgba(0, 0, 0, 0.16);
+  --soft: #f6f6f6;
+  --success-bg: #f2f2f2;
+  --success-text: #171717;
+  --warning-bg: #171717;
+  --warning-text: #ffffff;
+  --shadow-card: rgba(0, 0, 0, 0.08) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 8px 24px -12px, #fafafa 0 0 0 1px;
+  --shadow-soft: rgba(0, 0, 0, 0.08) 0 0 0 1px;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --sans: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: radial-gradient(circle at top, #fafafa 0%, #ffffff 52%);
+  color: var(--ink);
+  font-family: var(--sans);
+}
+
+body {
+  padding: 24px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.shell {
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+
+.topbar h1,
+.hero-copy h2,
+.section-heading h3 {
+  margin: 0;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+.topbar h1 {
+  max-width: 780px;
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  letter-spacing: -0.08em;
+  line-height: 0.95;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.topbar-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+}
+
+.hero-panel {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 20px;
+  padding: 28px;
+}
+
+.hero-copy p:not(.eyebrow) {
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.hero-copy h2 {
+  font-size: clamp(1.75rem, 2vw, 2.65rem);
+  letter-spacing: -0.06em;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.stat-card {
+  padding: 18px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+  background: linear-gradient(180deg, #fff, #fcfcfc);
+}
+
+.stat-card .label {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.stat-card .value {
+  margin: 12px 0 6px;
+  font-size: 2rem;
+  letter-spacing: -0.08em;
+  font-weight: 600;
+}
+
+.stat-card .subtext {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.prompt-panel,
+.agents-panel,
+.goals-panel,
+.progress-panel,
+.activity-panel {
+  padding: 24px;
+}
+
+.full-span {
+  grid-column: 1 / -1;
+}
+
+.prompt-panel,
+.progress-panel,
+.activity-panel {
+  min-height: 420px;
+}
+
+.activity-panel {
+  min-height: 0;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.section-heading h3 {
+  font-size: 1.35rem;
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.mono-tag {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 10px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-soft);
+  white-space: nowrap;
+}
+
+.stack-form,
+.goal-form {
+  display: grid;
+  gap: 16px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+textarea,
+input,
+select {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 16px;
+  resize: vertical;
+  box-shadow: var(--shadow-soft);
+  background: #fff;
+  color: var(--ink);
+}
+
+textarea:focus,
+input:focus,
+select:focus,
+button:focus {
+  outline: 2px solid #171717;
+  outline-offset: 2px;
+}
+
+.form-row.two-up {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.primary-button,
+.ghost-button {
+  border: none;
+  border-radius: 14px;
+  padding: 13px 16px;
+  transition: transform 140ms ease, background 140ms ease, color 140ms ease;
+}
+
+.primary-button {
+  background: var(--ink);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ghost-button {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: var(--shadow-soft);
+}
+
+.primary-button:hover,
+.ghost-button:hover {
+  transform: translateY(-1px);
+}
+
+.form-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.fine-print {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.agents-list,
+.goals-list,
+.milestones-list,
+.activity-feed,
+.directive-list {
+  display: grid;
+  gap: 14px;
+}
+
+.subsection-block {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.subsection-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.agent-card,
+.goal-card,
+.milestone-card,
+.activity-item,
+.directive-item {
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
+  padding: 16px;
+  background: #fff;
+}
+
+.agent-meta,
+.goal-card,
+.milestone-card,
+.activity-item,
+.directive-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.agent-name,
+.goal-title,
+.milestone-name,
+.activity-title,
+.directive-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.agent-role,
+.goal-meta,
+.milestone-description,
+.activity-detail,
+.activity-time,
+.agent-task-label,
+.agent-progress-label,
+.directive-meta {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.agent-task-block {
+  margin: 14px 0;
+}
+
+.agent-task-label {
+  margin-bottom: 8px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.agent-task {
+  margin: 0;
+  font-size: 0.94rem;
+  line-height: 1.5;
+}
+
+.agent-progress-row {
+  display: grid;
+  gap: 8px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: #efefef;
+  overflow: hidden;
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #171717;
+}
+
+.agent-footer,
+.goal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.compact-button {
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 0.88rem;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: var(--success-bg);
+  color: var(--success-text);
+  box-shadow: var(--shadow-soft);
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+.status-pill.in-progress,
+.status-pill.busy,
+.status-pill.high-priority,
+.status-pill.online {
+  background: var(--ink);
+  color: #fff;
+}
+
+.status-pill.queued,
+.status-pill.idle,
+.status-pill.complete,
+.status-pill.medium-priority,
+.status-pill.low-priority {
+  background: #f4f4f4;
+  color: var(--ink);
+}
+
+.status-pill.high-priority {
+  background: var(--ink);
+  color: #fff;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.activity-item {
+  align-items: flex-start;
+}
+
+.activity-time {
+  font-family: var(--mono);
+  min-width: 84px;
+}
+
+@media (max-width: 1100px) {
+  .grid-layout,
+  .hero-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  body {
+    padding: 16px;
+  }
+
+  .topbar,
+  .hero-panel,
+  .prompt-panel,
+  .agents-panel,
+  .goals-panel,
+  .progress-panel,
+  .activity-panel {
+    padding: 18px;
+  }
+
+  .topbar,
+  .topbar-actions,
+  .section-heading,
+  .goal-card,
+  .milestone-card,
+  .activity-item,
+  .agent-footer,
+  .goal-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-row.two-up,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

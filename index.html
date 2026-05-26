@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jarvis Mission Control</title>
+    <meta
+      name="description"
+      content="A black-and-white mission control surface for prompting agents, tracking goals, and monitoring progress."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar card">
+        <div>
+          <p class="eyebrow">Jarvis Mission Control</p>
+          <h1>Command your operators, goals, and progress from one surface.</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="status-pill online">
+            <span class="status-dot"></span>
+            Systems nominal
+          </div>
+          <button id="reset-demo" class="ghost-button">Reset sandbox</button>
+        </div>
+      </header>
+
+      <main class="grid-layout">
+        <section class="hero-panel card">
+          <div class="hero-copy">
+            <p class="eyebrow">Mission status</p>
+            <h2>Robust oversight for prompts, agents, objectives, and milestones.</h2>
+            <p>
+              This mission control keeps a live overview of your operator fleet, incoming directives,
+              strategic goals, and execution rhythm.
+            </p>
+          </div>
+          <div class="stats-grid" id="stats-grid"></div>
+        </section>
+
+        <section class="prompt-panel card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Directive console</p>
+              <h3>Prompt the fleet</h3>
+            </div>
+            <span class="mono-tag">operator://dispatch</span>
+          </div>
+          <form id="prompt-form" class="stack-form">
+            <label>
+              Directive
+              <textarea
+                id="prompt-input"
+                rows="5"
+                placeholder="Example: Audit the travel bookings workflow, identify blockers, and prepare a handoff summary."
+              ></textarea>
+            </label>
+            <div class="form-row two-up">
+              <label>
+                Priority
+                <select id="prompt-priority">
+                  <option value="High">High</option>
+                  <option value="Medium" selected>Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </label>
+              <label>
+                Target lane
+                <select id="prompt-lane">
+                  <option value="Operations">Operations</option>
+                  <option value="Research">Research</option>
+                  <option value="Delivery">Delivery</option>
+                  <option value="Optimization">Optimization</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-button">Dispatch directive</button>
+              <p class="fine-print">Each directive is logged, assigned to the least-loaded active agent, and reflected in progress telemetry.</p>
+            </div>
+          </form>
+          <div class="subsection-block">
+            <div class="subsection-head">
+              <p class="eyebrow">Mission queue</p>
+              <span class="mono-tag">queue://directives</span>
+            </div>
+            <div id="directive-list" class="directive-list"></div>
+          </div>
+        </section>
+
+        <section class="agents-panel card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Operator fleet</p>
+              <h3>Agents and current workload</h3>
+            </div>
+            <span class="mono-tag">fleet://live</span>
+          </div>
+          <div id="agents-list" class="agents-list"></div>
+        </section>
+
+        <section class="goals-panel card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Strategic goals</p>
+              <h3>Capture objectives and monitor execution</h3>
+            </div>
+            <span class="mono-tag">goals://board</span>
+          </div>
+          <form id="goal-form" class="goal-form">
+            <label>
+              Goal title
+              <input id="goal-title" type="text" placeholder="Launch mission control publicly" />
+            </label>
+            <div class="form-row two-up">
+              <label>
+                Owner
+                <input id="goal-owner" type="text" placeholder="Jarvis / Delivery" />
+              </label>
+              <label>
+                Deadline
+                <input id="goal-deadline" type="date" />
+              </label>
+            </div>
+            <button type="submit" class="ghost-button full-width">Add goal</button>
+          </form>
+          <div id="goals-list" class="goals-list"></div>
+        </section>
+
+        <section class="progress-panel card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Execution telemetry</p>
+              <h3>Mission progress and milestone tracking</h3>
+            </div>
+            <span class="mono-tag">telemetry://timeline</span>
+          </div>
+          <div id="milestones-list" class="milestones-list"></div>
+        </section>
+
+        <section class="activity-panel card full-span">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Recent activity</p>
+              <h3>Event stream</h3>
+            </div>
+            <span class="mono-tag">logs://recent</span>
+          </div>
+          <div id="activity-feed" class="activity-feed"></div>
+        </section>
+      </main>
+    </div>
+
+    <template id="agent-template">
+      <article class="agent-card">
+        <div class="agent-meta">
+          <div>
+            <p class="agent-name"></p>
+            <p class="agent-role"></p>
+          </div>
+          <span class="status-pill agent-status"></span>
+        </div>
+        <div class="agent-task-block">
+          <p class="agent-task-label">Current directive</p>
+          <p class="agent-task"></p>
+        </div>
+        <div class="agent-progress-row">
+          <div class="progress-bar"><span></span></div>
+          <p class="agent-progress-label"></p>
+        </div>
+        <div class="agent-footer">
+          <span class="mono-tag agent-lane"></span>
+          <button class="ghost-button compact-button agent-cycle">Advance status</button>
+        </div>
+      </article>
+    </template>
+
+    <template id="goal-template">
+      <article class="goal-card">
+        <div>
+          <p class="goal-title"></p>
+          <p class="goal-meta"></p>
+        </div>
+        <div class="goal-actions">
+          <span class="status-pill goal-status"></span>
+          <button class="ghost-button compact-button goal-toggle"></button>
+        </div>
+      </article>
+    </template>
+
+    <template id="milestone-template">
+      <article class="milestone-card">
+        <div>
+          <p class="milestone-name"></p>
+          <p class="milestone-description"></p>
+        </div>
+        <div class="goal-actions">
+          <span class="status-pill milestone-status"></span>
+          <button class="ghost-button compact-button milestone-toggle"></button>
+        </div>
+      </article>
+    </template>
+
+    <template id="directive-template">
+      <article class="directive-item">
+        <div>
+          <p class="directive-title"></p>
+          <p class="directive-meta"></p>
+        </div>
+        <span class="status-pill directive-priority"></span>
+      </article>
+    </template>
+
+    <template id="activity-template">
+      <article class="activity-item">
+        <div class="activity-time"></div>
+        <div>
+          <p class="activity-title"></p>
+          <p class="activity-detail"></p>
+        </div>
+      </article>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
