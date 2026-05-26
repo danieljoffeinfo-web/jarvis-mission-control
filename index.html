@@ -6,65 +6,80 @@
     <title>Jarvis Mission Control</title>
     <meta
       name="description"
-      content="A black-and-white mission control surface for prompting agents, tracking goals, and monitoring progress."
+      content="Jarvis Mission Control is a black-background mission dashboard for prompts, goals, jobs, and simple operating manuals."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="shell">
-      <header class="topbar card">
-        <div>
-          <p class="eyebrow">Jarvis Mission Control</p>
-          <h1>Command your operators, goals, and progress from one surface.</h1>
+      <header class="masthead grid-frame">
+        <div class="brand-cell">
+          <p class="label serif-label">Jarvis Mission Control</p>
+          <h1>The mission room that grows with you.</h1>
+          <p class="lede">
+            A calmer, clearer control surface for running missions, briefing agents, saving repeatable workflows,
+            and understanding what happens next.
+          </p>
         </div>
-        <div class="topbar-actions">
-          <div class="status-pill online">
-            <span class="status-dot"></span>
-            Systems nominal
-          </div>
-          <button id="reset-demo" class="ghost-button">Reset sandbox</button>
+        <nav class="nav-cell">
+          <button class="nav-button" data-scroll-target="prompt-panel">Start a mission</button>
+          <button class="nav-button" data-scroll-target="manual-panel">Quick guide</button>
+          <button class="nav-button" data-scroll-target="jobs-panel">Saved jobs</button>
+          <button class="nav-button" data-scroll-target="workflow-panel">Saved workflows</button>
+        </nav>
+        <div class="status-cell">
+          <div class="status-chip live"><span class="dot"></span>System live</div>
+          <button id="reset-demo" class="text-button">Reset demo</button>
         </div>
       </header>
 
-      <main class="grid-layout">
-        <section class="hero-panel card">
-          <div class="hero-copy">
-            <p class="eyebrow">Mission status</p>
-            <h2>Robust oversight for prompts, agents, objectives, and milestones.</h2>
+      <main class="dashboard-grid">
+        <section class="hero-frame grid-frame span-12">
+          <div class="hero-left">
+            <p class="label">Black edition</p>
+            <h2>Hermes-inspired structure, rebuilt for plain-English control.</h2>
             <p>
-              This mission control keeps a live overview of your operator fleet, incoming directives,
-              strategic goals, and execution rhythm.
+              This version uses a darker, editorial control-room layout and adds human-friendly guidance so you can
+              understand what each area is for without needing technical knowledge.
             </p>
+            <div class="hero-actions">
+              <button class="primary-button" data-scroll-target="manual-panel">Open quick guide</button>
+              <button class="ghost-button" data-scroll-target="prompt-panel">Start a mission</button>
+            </div>
           </div>
-          <div class="stats-grid" id="stats-grid"></div>
+          <div class="hero-right">
+            <div class="stat-grid" id="stats-grid"></div>
+          </div>
         </section>
 
-        <section class="prompt-panel card">
-          <div class="section-heading">
+        <section id="prompt-panel" class="grid-frame panel span-6">
+          <div class="panel-head">
             <div>
-              <p class="eyebrow">Directive console</p>
-              <h3>Prompt the fleet</h3>
+              <p class="label serif-label">Mission briefing</p>
+              <h3>Tell Jarvis what you want done</h3>
             </div>
-            <span class="mono-tag">operator://dispatch</span>
+            <span class="mono-pill">brief://dispatch</span>
           </div>
-          <form id="prompt-form" class="stack-form">
+
+          <form id="prompt-form" class="panel-form">
             <label>
-              Directive
+              What do you want done?
               <textarea
                 id="prompt-input"
                 rows="5"
-                placeholder="Example: Audit the travel bookings workflow, identify blockers, and prepare a handoff summary."
+                placeholder="Example: Review today's travel ops, find blockers, and get tomorrow organised."
               ></textarea>
             </label>
-            <div class="form-row two-up">
+
+            <div class="two-up">
               <label>
-                Priority
+                Importance
                 <select id="prompt-priority">
                   <option value="High">High</option>
                   <option value="Medium" selected>Medium</option>
@@ -72,7 +87,7 @@
                 </select>
               </label>
               <label>
-                Target lane
+                Best lane
                 <select id="prompt-lane">
                   <option value="Operations">Operations</option>
                   <option value="Research">Research</option>
@@ -81,140 +96,232 @@
                 </select>
               </label>
             </div>
-            <div class="form-actions">
-              <button type="submit" class="primary-button">Dispatch directive</button>
-              <p class="fine-print">Each directive is logged, assigned to the least-loaded active agent, and reflected in progress telemetry.</p>
-            </div>
+
+            <button type="submit" class="primary-button full-width">Send mission brief</button>
+            <p class="microcopy">The dashboard assigns the brief to the best available agent and saves it in your queue.</p>
           </form>
-          <div class="subsection-block">
-            <div class="subsection-head">
-              <p class="eyebrow">Mission queue</p>
-              <span class="mono-tag">queue://directives</span>
+
+          <div class="subpanel">
+            <div class="subpanel-head">
+              <p class="label">Queued briefs</p>
+              <span class="mono-pill">queue://active</span>
             </div>
-            <div id="directive-list" class="directive-list"></div>
+            <div id="directive-list" class="stack-list"></div>
           </div>
         </section>
 
-        <section class="agents-panel card">
-          <div class="section-heading">
+        <section class="grid-frame panel span-6">
+          <div class="panel-head">
             <div>
-              <p class="eyebrow">Operator fleet</p>
-              <h3>Agents and current workload</h3>
+              <p class="label serif-label">Agent room</p>
+              <h3>Who is busy right now</h3>
             </div>
-            <span class="mono-tag">fleet://live</span>
+            <span class="mono-pill">agents://live</span>
           </div>
-          <div id="agents-list" class="agents-list"></div>
+          <div id="agents-list" class="stack-list"></div>
         </section>
 
-        <section class="goals-panel card">
-          <div class="section-heading">
+        <section class="grid-frame panel span-4">
+          <div class="panel-head">
             <div>
-              <p class="eyebrow">Strategic goals</p>
-              <h3>Capture objectives and monitor execution</h3>
+              <p class="label serif-label">Goals</p>
+              <h3>Track the outcomes you care about</h3>
             </div>
-            <span class="mono-tag">goals://board</span>
+            <span class="mono-pill">goals://board</span>
           </div>
-          <form id="goal-form" class="goal-form">
+
+          <form id="goal-form" class="panel-form compact-gap">
             <label>
-              Goal title
-              <input id="goal-title" type="text" placeholder="Launch mission control publicly" />
+              Goal name
+              <input id="goal-title" type="text" placeholder="Example: Get tomorrow's work reviewed by 9am" />
             </label>
-            <div class="form-row two-up">
-              <label>
-                Owner
-                <input id="goal-owner" type="text" placeholder="Jarvis / Delivery" />
-              </label>
-              <label>
-                Deadline
-                <input id="goal-deadline" type="date" />
-              </label>
-            </div>
+            <label>
+              Who owns it?
+              <input id="goal-owner" type="text" placeholder="Example: Jarvis or Operations" />
+            </label>
+            <label>
+              When should it happen?
+              <input id="goal-deadline" type="date" />
+            </label>
             <button type="submit" class="ghost-button full-width">Add goal</button>
           </form>
-          <div id="goals-list" class="goals-list"></div>
+
+          <div id="goals-list" class="stack-list"></div>
         </section>
 
-        <section class="progress-panel card">
-          <div class="section-heading">
+        <section id="jobs-panel" class="grid-frame panel span-4">
+          <div class="panel-head">
             <div>
-              <p class="eyebrow">Execution telemetry</p>
-              <h3>Mission progress and milestone tracking</h3>
+              <p class="label serif-label">Saved jobs</p>
+              <h3>Repeat work without remembering every step</h3>
             </div>
-            <span class="mono-tag">telemetry://timeline</span>
+            <span class="mono-pill">jobs://saved</span>
           </div>
-          <div id="milestones-list" class="milestones-list"></div>
+
+          <form id="job-form" class="panel-form compact-gap">
+            <label>
+              Job name
+              <input id="job-title" type="text" placeholder="Example: Morning travel operations review" />
+            </label>
+            <label>
+              When should it run?
+              <input id="job-schedule" type="text" placeholder="Example: Every weekday at 08:30" />
+            </label>
+            <label>
+              What should it do?
+              <textarea id="job-brief" rows="4" placeholder="Example: Check open tasks, summarise blockers, and send me the top priorities."></textarea>
+            </label>
+            <button type="submit" class="ghost-button full-width">Save job</button>
+          </form>
+
+          <div id="jobs-list" class="stack-list"></div>
         </section>
 
-        <section class="activity-panel card full-span">
-          <div class="section-heading">
+        <section id="workflow-panel" class="grid-frame panel span-4">
+          <div class="panel-head">
             <div>
-              <p class="eyebrow">Recent activity</p>
-              <h3>Event stream</h3>
+              <p class="label serif-label">Saved workflows</p>
+              <h3>Reusable playbooks for redeploys and recurring jobs</h3>
             </div>
-            <span class="mono-tag">logs://recent</span>
+            <span class="mono-pill">playbooks://ready</span>
           </div>
-          <div id="activity-feed" class="activity-feed"></div>
+          <div id="workflow-list" class="stack-list"></div>
+        </section>
+
+        <section class="grid-frame panel span-7" id="manual-panel">
+          <div class="panel-head">
+            <div>
+              <p class="label serif-label">Quick manual</p>
+              <h3>How to use this without technical jargon</h3>
+            </div>
+            <span class="mono-pill">manual://plain-english</span>
+          </div>
+          <div id="manual-list" class="manual-list"></div>
+          <div class="manual-note">
+            <p class="label">Model note</p>
+            <p>
+              I did not need to switch models for this redesign. If you ever want me to move to 5.5, you can simply say:
+              “Jarvis, switch to 5.5.”
+            </p>
+          </div>
+        </section>
+
+        <section class="grid-frame panel span-5">
+          <div class="panel-head">
+            <div>
+              <p class="label serif-label">Readiness board</p>
+              <h3>What is already working</h3>
+            </div>
+            <span class="mono-pill">status://clarity</span>
+          </div>
+          <div id="milestones-list" class="stack-list"></div>
+        </section>
+
+        <section class="grid-frame panel span-12">
+          <div class="panel-head">
+            <div>
+              <p class="label serif-label">Recent activity</p>
+              <h3>The latest changes in your mission room</h3>
+            </div>
+            <span class="mono-pill">logs://recent</span>
+          </div>
+          <div id="activity-feed" class="activity-list"></div>
         </section>
       </main>
     </div>
 
     <template id="agent-template">
-      <article class="agent-card">
-        <div class="agent-meta">
+      <article class="list-card agent-card">
+        <div class="card-head">
           <div>
-            <p class="agent-name"></p>
-            <p class="agent-role"></p>
+            <p class="card-title"></p>
+            <p class="card-meta"></p>
           </div>
-          <span class="status-pill agent-status"></span>
+          <span class="status-chip card-status"></span>
         </div>
-        <div class="agent-task-block">
-          <p class="agent-task-label">Current directive</p>
-          <p class="agent-task"></p>
-        </div>
-        <div class="agent-progress-row">
-          <div class="progress-bar"><span></span></div>
-          <p class="agent-progress-label"></p>
-        </div>
-        <div class="agent-footer">
-          <span class="mono-tag agent-lane"></span>
-          <button class="ghost-button compact-button agent-cycle">Advance status</button>
-        </div>
-      </article>
-    </template>
-
-    <template id="goal-template">
-      <article class="goal-card">
-        <div>
-          <p class="goal-title"></p>
-          <p class="goal-meta"></p>
-        </div>
-        <div class="goal-actions">
-          <span class="status-pill goal-status"></span>
-          <button class="ghost-button compact-button goal-toggle"></button>
-        </div>
-      </article>
-    </template>
-
-    <template id="milestone-template">
-      <article class="milestone-card">
-        <div>
-          <p class="milestone-name"></p>
-          <p class="milestone-description"></p>
-        </div>
-        <div class="goal-actions">
-          <span class="status-pill milestone-status"></span>
-          <button class="ghost-button compact-button milestone-toggle"></button>
+        <p class="card-body card-task"></p>
+        <div class="progress-bar"><span></span></div>
+        <div class="card-foot">
+          <span class="mono-pill tiny-pill card-lane"></span>
+          <span class="progress-text"></span>
+          <button class="text-button agent-cycle">Advance</button>
         </div>
       </article>
     </template>
 
     <template id="directive-template">
-      <article class="directive-item">
-        <div>
-          <p class="directive-title"></p>
-          <p class="directive-meta"></p>
+      <article class="list-card slim-card">
+        <div class="card-head">
+          <div>
+            <p class="card-title"></p>
+            <p class="card-meta"></p>
+          </div>
+          <span class="status-chip directive-priority"></span>
         </div>
-        <span class="status-pill directive-priority"></span>
+      </article>
+    </template>
+
+    <template id="goal-template">
+      <article class="list-card slim-card">
+        <div class="card-head stacked-mobile">
+          <div>
+            <p class="card-title"></p>
+            <p class="card-meta"></p>
+          </div>
+          <div class="inline-actions">
+            <span class="status-chip goal-status"></span>
+            <button class="text-button goal-toggle"></button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <template id="job-template">
+      <article class="list-card slim-card">
+        <div class="card-head stacked-mobile">
+          <div>
+            <p class="card-title"></p>
+            <p class="card-meta"></p>
+            <p class="card-body job-brief"></p>
+          </div>
+          <div class="inline-actions">
+            <span class="status-chip job-status"></span>
+            <button class="text-button job-toggle"></button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <template id="workflow-template">
+      <article class="list-card workflow-card">
+        <p class="card-title"></p>
+        <p class="card-body workflow-summary"></p>
+        <ol class="workflow-steps"></ol>
+      </article>
+    </template>
+
+    <template id="manual-template">
+      <article class="manual-step">
+        <p class="manual-step-number"></p>
+        <div>
+          <p class="card-title manual-title"></p>
+          <p class="card-body manual-body"></p>
+        </div>
+      </article>
+    </template>
+
+    <template id="milestone-template">
+      <article class="list-card slim-card">
+        <div class="card-head stacked-mobile">
+          <div>
+            <p class="card-title"></p>
+            <p class="card-body"></p>
+          </div>
+          <div class="inline-actions">
+            <span class="status-chip milestone-status"></span>
+            <button class="text-button milestone-toggle"></button>
+          </div>
+        </div>
       </article>
     </template>
 
@@ -222,8 +329,8 @@
       <article class="activity-item">
         <div class="activity-time"></div>
         <div>
-          <p class="activity-title"></p>
-          <p class="activity-detail"></p>
+          <p class="card-title activity-title"></p>
+          <p class="card-body activity-detail"></p>
         </div>
       </article>
     </template>
