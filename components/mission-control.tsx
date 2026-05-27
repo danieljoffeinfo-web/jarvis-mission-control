@@ -61,6 +61,8 @@ export default function MissionControl() {
     rory: recommendations.filter((item) => item.category === 'rory' && item.status === 'open')
   }), [recommendations]);
 
+  const latestMission = missions[0] ?? null;
+
   async function sendLiveMessage() {
     if (!chatInput.trim()) return;
     setStreamLabel('> Maya is cleaning the brief… > Ron is assigning work…');
@@ -133,107 +135,117 @@ export default function MissionControl() {
       </nav>
 
       {tab === 'home' ? (
-        <main className="home-grid">
-          <section className="panel split-panel">
-            <div className="panel-head">
+        <main className="conversation-layout">
+          <section className="panel conversation-panel">
+            <div className="panel-head conversation-head">
               <div>
-                <p className="eyebrow">TUI</p>
-                <h2>Live session</h2>
+                <p className="eyebrow">Live conversation</p>
+                <h2>Talk to Jarvis</h2>
+                <p className="subtle">This is your main thread. It should feel like a direct conversation, not an operations dashboard.</p>
               </div>
-              <div className="command-row">
-                <span className="chip">/health</span>
-                <span className="chip">/agents</span>
-                <span className="chip">/clear</span>
-                <span className="chip">/mission</span>
-              </div>
+              <button className="text-button" onClick={() => setAgentOpen(agents.find((agent) => agent.id === 'jarvis') ?? null)}>Open Jarvis</button>
             </div>
-            <div className="terminal">
-              {messages.length === 0 ? <p className="empty">No live thread yet. The first message will enter the Maya → Ron → workers → Ron → David → Jarvis pipeline.</p> : null}
+
+            <div className="chat-thread">
+              {messages.length === 0 ? (
+                <div className="empty-thread">
+                  <p className="empty-title">Start the conversation.</p>
+                  <p className="empty">Ask Jarvis to do something now, or turn it into a mission if it belongs in the background.</p>
+                </div>
+              ) : null}
+
               {messages.map((message) => (
-                <article key={message.id} className={`terminal-message ${message.role}`}>
-                  <div className="terminal-meta">
-                    <span>{message.role === 'operator' ? 'Operator' : 'Jarvis'}</span>
-                    <span>{new Date(message.createdAt).toLocaleString()}</span>
+                <article key={message.id} className={`chat-row ${message.role === 'operator' ? 'operator' : 'assistant'}`}>
+                  <div className={`chat-bubble ${message.role === 'operator' ? 'operator' : 'assistant'}`}>
+                    <div className="bubble-meta">
+                      <span>{message.role === 'operator' ? 'You' : 'Jarvis'}</span>
+                      <span>{new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <p>{message.text}</p>
                   </div>
-                  <pre>{message.text}</pre>
-                  {message.agents.length ? <div className="agent-badges">{message.agents.map((agent) => <span key={agent} className="chip">{agent}</span>)}</div> : null}
-                  {message.pipeline?.length ? <div className="pipeline-list">{message.pipeline.map((item) => <p key={item.id}>{`> ${item.agentId} • ${item.stage} • ${item.outputSummary}`}</p>)}</div> : null}
                 </article>
               ))}
-              {streamLabel ? <p className="stream-label">{streamLabel}</p> : null}
+
+              {streamLabel ? <p className="streaming-note">Jarvis is thinking…</p> : null}
             </div>
-            <div className="composer">
-              <textarea value={chatInput} onChange={(event) => setChatInput(event.target.value)} placeholder="Talk to Jarvis live. Every message goes through Maya, Ron, the workers, David, then back to Jarvis." />
+
+            <div className="composer conversation-composer">
+              <textarea
+                value={chatInput}
+                onChange={(event) => setChatInput(event.target.value)}
+                placeholder="Message Jarvis…"
+              />
               <div className="composer-actions">
-                <button className="button secondary" onClick={() => setChatInput(`/mission ${chatInput}`)}>Promote to mission</button>
-                <button className="button" onClick={sendLiveMessage}>Send live message</button>
+                <button className="button secondary" onClick={() => setChatInput(`/mission ${chatInput}`)}>Turn into mission</button>
+                <button className="button" onClick={sendLiveMessage}>Send</button>
               </div>
             </div>
           </section>
 
-          <section className="panel split-panel">
-            <div className="panel-head">
-              <div>
-                <p className="eyebrow">Missions</p>
-                <h2>Scheduled / background work</h2>
+          <aside className="side-stack">
+            <section className="panel side-panel">
+              <div className="panel-head compact-head">
+                <div>
+                  <p className="eyebrow">Background work</p>
+                  <h2>Missions</h2>
+                </div>
               </div>
-            </div>
-            <div className="mission-composer">
-              <textarea value={missionBrief} onChange={(event) => setMissionBrief(event.target.value)} placeholder="Describe the mission. Maya will clean it, Ron will assign it, and the scheduler will run it at the right time." />
-              <div className="mission-controls">
-                <input type="datetime-local" value={missionDueAt} onChange={(event) => setMissionDueAt(event.target.value)} />
-                <select value={missionPriority} onChange={(event) => setMissionPriority(event.target.value as Priority)}>
-                  <option>Low</option>
-                  <option>Medium</option>
-                  <option>High</option>
-                </select>
-                <button className="button" onClick={createMission}>New mission</button>
+              <div className="mission-composer compact-composer">
+                <textarea
+                  value={missionBrief}
+                  onChange={(event) => setMissionBrief(event.target.value)}
+                  placeholder="Create a scheduled mission…"
+                />
+                <div className="mission-controls">
+                  <input type="datetime-local" value={missionDueAt} onChange={(event) => setMissionDueAt(event.target.value)} />
+                  <select value={missionPriority} onChange={(event) => setMissionPriority(event.target.value as Priority)}>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                  </select>
+                </div>
+                <button className="button" onClick={createMission}>Save mission</button>
               </div>
-            </div>
-            <div className="mission-list">
-              {missions.length === 0 ? <p className="empty">No missions yet. Scheduled work created here will appear with due date, delegation plan, and an agent trail.</p> : null}
-              {missions.map((mission) => (
-                <article key={mission.id} className="mission-card">
+              {latestMission ? (
+                <article className="mission-card compact-mission-card">
                   <div className="mission-top">
                     <div>
-                      <h3>{mission.title}</h3>
-                      <p>{mission.cleanedBrief}</p>
+                      <h3>{latestMission.title}</h3>
+                      <p>{latestMission.cleanedBrief}</p>
                     </div>
-                    <span className={`status ${mission.status.toLowerCase().replace(/\s+/g, '-')}`}>{mission.status}</span>
+                    <span className={`status ${latestMission.status.toLowerCase().replace(/\s+/g, '-')}`}>{latestMission.status}</span>
                   </div>
                   <div className="mission-meta">
-                    <span>{mission.priority}</span>
-                    <span>{mission.dueAt ? new Date(mission.dueAt).toLocaleString() : 'Runs ASAP'}</span>
-                    <span>Assigned by {mission.assignedBy}</span>
-                  </div>
-                  <div className="agent-badges">
-                    {mission.delegationPlan.map((item) => <span key={`${mission.id}-${item.agentId}`} className="chip">{item.agentId}</span>)}
+                    <span>{latestMission.priority}</span>
+                    <span>{latestMission.dueAt ? new Date(latestMission.dueAt).toLocaleString() : 'Runs ASAP'}</span>
                   </div>
                 </article>
-              ))}
-            </div>
-          </section>
+              ) : (
+                <p className="empty">No missions yet.</p>
+              )}
+            </section>
 
-          <section className="panel full-span">
-            <div className="panel-head">
-              <div>
-                <p className="eyebrow">Agent room</p>
-                <h2>Fixed roster</h2>
+            <section className="panel side-panel">
+              <div className="panel-head compact-head">
+                <div>
+                  <p className="eyebrow">Agent room</p>
+                  <h2>Roster</h2>
+                </div>
               </div>
-            </div>
-            <div className="agent-grid">
-              {agents.map((agent) => (
-                <button key={agent.id} className="agent-card" onClick={() => setAgentOpen(agent)}>
-                  <div className="agent-avatar" style={{ borderColor: agent.accentColor, color: agent.accentColor }}>{agent.avatar}</div>
-                  <div className="agent-copy">
-                    <strong>{agent.name}</strong>
-                    <span>{agent.title}</span>
-                    <div className="agent-status"><span className={`dot ${agent.currentStatus}`} />currently: {agent.currentTask}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </section>
+              <div className="roster-list">
+                {agents.map((agent) => (
+                  <button key={agent.id} className="roster-item" onClick={() => setAgentOpen(agent)}>
+                    <div className="agent-avatar" style={{ borderColor: agent.accentColor, color: agent.accentColor }}>{agent.avatar}</div>
+                    <div className="roster-copy">
+                      <strong>{agent.name}</strong>
+                      <span>{agent.title}</span>
+                    </div>
+                    <span className={`dot ${agent.currentStatus}`} />
+                  </button>
+                ))}
+              </div>
+            </section>
+          </aside>
         </main>
       ) : (
         <main className="recommendations-grid">
