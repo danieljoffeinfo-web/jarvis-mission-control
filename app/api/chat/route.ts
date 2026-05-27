@@ -55,6 +55,24 @@ function buildDelegationPlan(cleanedBrief: string) {
   return { picks: Array.from(new Set(picks.concat('rory'))), plan };
 }
 
+function buildAssistantReply(cleanedBrief: string) {
+  const lower = cleanedBrief.toLowerCase();
+
+  if (/^(hi|hey|hello|yo|sup|howdy)(\b|[!.? ]|$)/.test(lower)) {
+    return 'Hey — Jarvis here. What do you want me to help you with?';
+  }
+
+  if (/^thanks?(\b|[!.? ]|$)/.test(lower)) {
+    return 'Anytime. Keep going — what do you want me to do next?';
+  }
+
+  if (/^help(\b|[!.? ]|$)/.test(lower)) {
+    return 'I can help in two ways: talk to me here for something you want done now, or turn it into a mission if it should run later in the background.';
+  }
+
+  return `Got it. ${cleanedBrief}\n\nTell me what you want done, what outcome you want, or what decision you want help making, and I’ll handle it like a normal conversation.`;
+}
+
 export async function POST(request: NextRequest) {
   const store = getStore();
   const { message } = await request.json();
@@ -84,10 +102,10 @@ export async function POST(request: NextRequest) {
     updateAgent(item.agentId, 'idle', AGENTS.find((agent) => agent.id === item.agentId)?.currentTask || 'Standing by.');
   });
 
-  const synthesis = `Maya clarified your request, Ron delegated the work, and David cleared the response.\n\nCleaned brief: ${cleanedBrief}\n\nDelegation:\n${delegation.plan.map((item) => `- ${item.agentId.toUpperCase()}: ${item.why}`).join('\n')}\n\nNext action: this V2 rebuild should route into the live TUI thread, mission scheduler, and agent room using the same event trail.`;
+  const synthesis = buildAssistantReply(cleanedBrief);
 
   events.push(stage('ron', 'synthesis', cleanedBrief, 'Ron synthesized the worker outputs into one operator-ready response.', undefined, liveMessageId));
-  events.push(stage('david', 'qa-gate', cleanedBrief, 'PASS — response addresses the cleaned brief and notes the pipeline clearly.', undefined, liveMessageId));
+  events.push(stage('david', 'qa-gate', cleanedBrief, 'PASS — response addresses the cleaned brief and keeps the surface conversational.', undefined, liveMessageId));
   events.push(stage('jarvis', 'delivery', cleanedBrief, 'Jarvis delivered the final answer to the operator.', undefined, liveMessageId));
 
   const assistantMessage: LiveMessage = {
@@ -95,8 +113,7 @@ export async function POST(request: NextRequest) {
     role: 'jarvis',
     text: synthesis,
     createdAt: now(),
-    agents: ['maya', 'ron', ...delegation.plan.map((item) => item.agentId), 'david', 'jarvis'],
-    pipeline: events
+    agents: ['jarvis']
   };
 
   store.liveMessages.push(operatorMessage, assistantMessage);
