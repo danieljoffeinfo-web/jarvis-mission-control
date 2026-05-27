@@ -70,7 +70,15 @@ function buildAssistantReply(cleanedBrief: string) {
     return 'I can help in two ways: talk to me here for something you want done now, or turn it into a mission if it should run later in the background.';
   }
 
-  return `Got it. ${cleanedBrief}\n\nTell me what you want done, what outcome you want, or what decision you want help making, and I’ll handle it like a normal conversation.`;
+  if (/(what did we work on today|what have we worked on today|what did we do today)/.test(lower)) {
+    return 'Right now this Mission Control chat is still mostly a UI shell, so it does not really remember the day\'s work properly yet. In the real chat with me today, we worked mainly on two things: the DFT Tours scroll-animation site and this Jarvis Mission Control rebuild. I still need to wire real persistence and a real backend so this app can answer that question properly from stored history.';
+  }
+
+  if (/(what is going on|is anything even plugged in|are you even connected|is this real)/.test(lower)) {
+    return 'The honest answer is: not fully yet. The UI is live, but the deep backend is still mostly scaffolded. That means the app can still sound generic instead of actually understanding the ongoing conversation. I\'m fixing that in stages.';
+  }
+
+  return `I got your message: "${cleanedBrief}". Right now this app still has a basic fallback reply layer, so if you want a real useful answer inside Mission Control I need to wire the actual backend and persistence next.`;
 }
 
 export async function POST(request: NextRequest) {
