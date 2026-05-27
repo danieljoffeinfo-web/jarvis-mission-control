@@ -53,8 +53,8 @@ function now() {
   return new Date().toISOString();
 }
 
-export function makeId(prefix: string) {
-  return `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
+export function makeId(_prefix: string) {
+  return crypto.randomUUID();
 }
 
 export async function ensureOperator() {
