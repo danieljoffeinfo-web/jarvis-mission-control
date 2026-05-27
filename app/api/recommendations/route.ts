@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server';
-import { getStore } from '@/lib/store';
+import { listRecommendations } from '@/lib/backend';
+import type { Recommendation, Reminder } from '@/lib/store';
 
 export async function GET() {
-  const store = getStore();
+  const { reminders, recommendations } = await listRecommendations();
   return NextResponse.json({
-    reminders: store.reminders,
-    recommendations: store.recommendations,
+    reminders,
+    recommendations,
     archive: {
-      reminders: store.reminders.filter((item) => item.status !== 'open'),
-      recommendations: store.recommendations.filter((item) => item.status !== 'open')
+      reminders: reminders.filter((item: Reminder) => item.status !== 'open'),
+      recommendations: recommendations.filter((item: Recommendation) => item.status !== 'open')
     }
   });
 }

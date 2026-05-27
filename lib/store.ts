@@ -1,4 +1,4 @@
-import { AGENTS, Agent, AgentStatus } from '@/lib/agents';
+import type { AgentStatus } from '@/lib/agents';
 
 export type Role = 'operator' | 'jarvis';
 export type MissionStatus = 'Scheduled' | 'In Progress' | 'In QA' | 'Blocked' | 'Complete' | 'Failed';
@@ -66,67 +66,3 @@ export type HealthSnapshot = {
   latencyMs: number;
   tokenBudgetToday: number;
 };
-
-export type AppState = {
-  agents: Agent[];
-  liveMessages: LiveMessage[];
-  missions: Mission[];
-  missionEvents: MissionEvent[];
-  reminders: Reminder[];
-  recommendations: Recommendation[];
-  health: HealthSnapshot;
-};
-
-const globalForStore = globalThis as unknown as { missionControlStore?: AppState };
-
-function now() {
-  return new Date().toISOString();
-}
-
-function createInitialState(): AppState {
-  return {
-    agents: AGENTS,
-    liveMessages: [],
-    missions: [],
-    missionEvents: [],
-    reminders: [],
-    recommendations: [],
-    health: {
-      activeModel: process.env.ACTIVE_MODEL || 'claude-opus-4-7',
-      subAgents: AGENTS.map((agent) => ({
-        id: agent.id,
-        name: agent.name,
-        status: agent.currentStatus,
-        currentTask: agent.currentTask
-      })),
-      memoryStatus: { reachable: false, lastWriteAt: null, itemCount: 0 },
-      connectors: [],
-      lastDeploy: {
-        sha: process.env.VERCEL_GIT_COMMIT_SHA || 'local',
-        at: process.env.VERCEL_GIT_COMMIT_MESSAGE || now()
-      },
-      latencyMs: 0,
-      tokenBudgetToday: 0
-    }
-  };
-}
-
-export function getStore() {
-  if (!globalForStore.missionControlStore) {
-    globalForStore.missionControlStore = createInitialState();
-  }
-  return globalForStore.missionControlStore;
-}
-
-export function updateAgent(agentId: string, status: AgentStatus, currentTask: string) {
-  const store = getStore();
-  store.agents = store.agents.map((agent) =>
-    agent.id === agentId ? { ...agent, currentStatus: status, currentTask } : agent
-  );
-  store.health.subAgents = store.agents.map((agent) => ({
-    id: agent.id,
-    name: agent.name,
-    status: agent.currentStatus,
-    currentTask: agent.currentTask
-  }));
-}

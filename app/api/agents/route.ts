@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getStore } from '@/lib/store';
+import { listAgents, listEvents } from '@/lib/backend';
 
 export async function GET() {
-  const store = getStore();
-  return NextResponse.json({ agents: store.agents, events: store.missionEvents.slice(0, 50) });
+  const [agents, events] = await Promise.all([listAgents(), listEvents(50)]);
+  return NextResponse.json({ agents, events });
 }

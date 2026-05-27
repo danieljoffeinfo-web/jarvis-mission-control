@@ -1,25 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getStore, Mission, MissionEvent } from '@/lib/store';
-
-function id(prefix: string) {
-  return `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
-}
+import { insertEvents, insertMission, listEvents, listMissions, makeId } from '@/lib/backend';
+import type { Mission, MissionEvent } from '@/lib/store';
 
 function now() {
   return new Date().toISOString();
 }
 
 export async function GET() {
-  const store = getStore();
-  return NextResponse.json({ missions: store.missions, missionEvents: store.missionEvents });
+  const [missions, missionEvents] = await Promise.all([listMissions(), listEvents(200)]);
+  return NextResponse.json({ missions, missionEvents });
 }
 
 export async function POST(request: NextRequest) {
-  const store = getStore();
   const body = await request.json();
   const cleanedBrief = String(body.brief || '').trim().replace(/\s+/g, ' ');
   const mission: Mission = {
-    id: id('mission'),
+    id: makeId('mission'),
     title: cleanedBrief.slice(0, 72) || 'Untitled mission',
     originalBrief: String(body.brief || ''),
     cleanedBrief,
@@ -32,12 +28,12 @@ export async function POST(request: NextRequest) {
       { agentId: 'david', why: 'Final QA gate.' }
     ],
     status: body.dueAt ? 'Scheduled' : 'In Progress',
-    result: body.dueAt ? '' : 'Mission queued for background execution. Ron will synthesize output when the worker loop runs.',
+    result: body.dueAt ? '' : 'Mission stored. Scheduler wiring still needs to be completed for autonomous execution.',
     source: body.source || 'manual'
   };
 
   const event: MissionEvent = {
-    id: id('evt'),
+    id: makeId('evt'),
     missionId: mission.id,
     agentId: 'maya',
     stage: 'mission-created',
@@ -47,7 +43,8 @@ export async function POST(request: NextRequest) {
     tokenUsage: Math.max(10, Math.round(cleanedBrief.length / 4))
   };
 
-  store.missions.unshift(mission);
-  store.missionEvents.unshift(event);
+  await insertMission(mission);
+  await insertEvents([event]);
+
   return NextResponse.json({ mission });
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getStore } from '@/lib/store';
+import { buildHealth } from '@/lib/backend';
 
 export async function GET() {
-  const store = getStore();
-  return NextResponse.json(store.health);
+  const health = await buildHealth();
+  return NextResponse.json(health);
 }

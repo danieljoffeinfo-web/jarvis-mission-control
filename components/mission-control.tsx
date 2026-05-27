@@ -5,6 +5,7 @@ import type { Agent } from '@/lib/agents';
 import type { HealthSnapshot, LiveMessage, Mission, MissionEvent, Priority, Recommendation, Reminder } from '@/lib/store';
 
 type AgentResponse = { agents: Agent[]; events: MissionEvent[] };
+type ChatResponse = { messages: LiveMessage[] };
 type MissionResponse = { missions: Mission[]; missionEvents: MissionEvent[] };
 type RecommendationResponse = { reminders: Reminder[]; recommendations: Recommendation[]; archive: { reminders: Reminder[]; recommendations: Recommendation[] } };
 
@@ -37,9 +38,10 @@ export default function MissionControl() {
   const [streamLabel, setStreamLabel] = useState('');
 
   async function load() {
-    const [healthRes, agentRes, missionRes, recommendationRes] = await Promise.all([
+    const [healthRes, agentRes, chatRes, missionRes, recommendationRes] = await Promise.all([
       fetch('/api/health').then((res) => res.json()),
       fetch('/api/agents').then((res) => res.json()) as Promise<AgentResponse>,
+      fetch('/api/chat').then((res) => res.json()) as Promise<ChatResponse>,
       fetch('/api/missions').then((res) => res.json()) as Promise<MissionResponse>,
       fetch('/api/recommendations').then((res) => res.json()) as Promise<RecommendationResponse>
     ]);
@@ -47,6 +49,7 @@ export default function MissionControl() {
     setHealth(healthRes);
     setAgents(agentRes.agents);
     setEvents(agentRes.events);
+    setMessages(chatRes.messages);
     setMissions(missionRes.missions);
     setReminders(recommendationRes.reminders);
     setRecommendations(recommendationRes.recommendations);
@@ -65,23 +68,14 @@ export default function MissionControl() {
 
   async function sendLiveMessage() {
     if (!chatInput.trim()) return;
-    setStreamLabel('> Maya is cleaning the brief… > Ron is assigning work…');
-    const operator: LiveMessage = {
-      id: crypto.randomUUID(),
-      role: 'operator',
-      text: chatInput,
-      createdAt: new Date().toISOString(),
-      agents: ['maya', 'ron']
-    };
-    setMessages((current) => [...current, operator]);
+    setStreamLabel('Jarvis is thinking…');
     const input = chatInput;
     setChatInput('');
-    const response = await fetch('/api/chat', {
+    await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: input })
     }).then((res) => res.json());
-    setMessages((current) => [...current, response.message]);
     setStreamLabel('');
     await load();
   }
